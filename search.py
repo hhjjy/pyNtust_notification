@@ -113,7 +113,8 @@ def morning_job():
 
 #測試
 # search_job()
-#正常執行狀態
+# morning_job()
+# #正常執行狀態
 schedule.every(5).minutes.do(search_job)
 schedule.every(4).hours.do(morning_job)
 while(True):
