@@ -78,7 +78,7 @@ def search_for_course_info(ID:str):
     return response.text
 
 def search_job():
-    logging.info(f"{get_time_now() }开始执行操作：{inspect.currentframe().f_code.co_name} ")
+    logging.info(f"{get_time_now()} 开始执行操作： {inspect.currentframe().f_code.co_name} ")
     select = False
     temp = ""
     for course in courses:
