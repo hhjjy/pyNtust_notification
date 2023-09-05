@@ -3,12 +3,16 @@ import json
 import send
 import time
 import schedule
+import logging
+import inspect
+
+logging.basicConfig(filename='record.log', level=logging.INFO)
 
 from datetime import datetime
 url = 'https://querycourse.ntust.edu.tw/querycourse/api/courses'
 courses = [
     "ET4606701",#網際網路與應用
-    "ECG003301",#通識課for 測試 
+    # "ECG003301",#通識課for 測試 
 ]
 
 
@@ -39,9 +43,10 @@ def send_notification(action_name:str,content:str):
 
     response = requests.post(url, headers=headers, 
                             data=json.dumps(data).encode("utf-8"))
-
-    print(response.status_code)  # 打印响应状态码
-    print(response.text)  # 打印响应内容
+    if response.status_code != 200 :
+        logging.error(f"{inspect.currentframe().f_code.co_nam} 傳送失敗！")
+    # print(response.status_code)  # 打印响应状态码
+    # print(response.text)  # 打印响应内容
 # send_notification("查詢課程中","課程{}:選課人數...")
 def search_for_course_info(ID:str):
     headers = {
@@ -73,8 +78,8 @@ def search_for_course_info(ID:str):
     return response.text
 
 def search_job():
+    logging.info(f"{get_time_now() }开始执行操作：{inspect.currentframe().f_code.co_name} ")
     select = False
-    print("當前時間是："+get_time_now())
     temp = ""
     for course in courses:
         try:
@@ -90,25 +95,28 @@ def search_job():
             else :
                 temp += f"{course} {course_name}還不能選喔！<br>"
                 print("還不能選喔！QQ")
-        except:
+        except Exception as e:
+            logging.error("发生错误：{}".format(e))
             temp += f"找不到課程{course}！<br>"
     if select:
         send_notification("你有課程可以選了！",temp)
 
 #確保程式仍在運作
 def morning_job():
+    logging.info(f"{get_time_now() }开始执行操作：{inspect.currentframe().f_code.co_name} ")
     send_notification("程式仍在工作中！","")
 
 #每天早上定期傳送一個顯示當前狀態的通知 
 #其他時間都照
 #如果可以選課了！
-
-
-    
 # 傳送訊息確保正常運作！
 
+#測試
+# search_job()
+#正常執行狀態
 schedule.every(5).minutes.do(search_job)
-schedule.every(6).hours.do(morning_job)
+schedule.every(4).hours.do(morning_job)
 while(True):
+    print(get_time_now())
     schedule.run_pending()
     time.sleep(1)
