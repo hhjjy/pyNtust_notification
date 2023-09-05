@@ -1,6 +1,5 @@
 import requests
 import json
-import send
 import time
 import schedule
 import logging
