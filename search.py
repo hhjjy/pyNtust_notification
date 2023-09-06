@@ -12,9 +12,10 @@ url = 'https://querycourse.ntust.edu.tw/querycourse/api/courses'
 courses = [
     "ET4606701",#網際網路與應用
     # "ECG003301",#通識課for 測試 
+    "ECG003301"#電資論壇測試
 ]
 
-
+status = 0 
 def get_time_now():
     # 获取当前时间
     now = datetime.now()
@@ -74,6 +75,8 @@ def search_for_course_info(ID:str):
 
     # print(response.status_code)  # 打印响应状态码
     # print(response.text)  # 打印响应内容
+    global status
+    status = response.status_code
     return response.text
 
 def search_job():
@@ -103,7 +106,7 @@ def search_job():
 #確保程式仍在運作
 def morning_job():
     logging.info(f"{get_time_now() }开始执行操作：{inspect.currentframe().f_code.co_name} ")
-    send_notification("程式仍在工作中！","")
+    send_notification("程式仍在工作中！",f"狀態碼：{status}")
 
 #每天早上定期傳送一個顯示當前狀態的通知 
 #其他時間都照
@@ -114,8 +117,11 @@ def morning_job():
 # search_job()
 # morning_job()
 # #正常執行狀態
-schedule.every(5).minutes.do(search_job)
+schedule.every(3).seconds.do(search_job)
 schedule.every(4).hours.do(morning_job)
+#測試
+search_job()
+morning_job()
 while(True):
     print(get_time_now())
     schedule.run_pending()
